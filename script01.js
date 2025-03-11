@@ -5,10 +5,10 @@ addEventListener('fetch', event => {
 async function handleRequest(request) {
   const url = new URL(request.url);
 
-  // تغییر آدرس مقصد به دامنه‌ی مورد نظر شما
-  const targetUrl = 'https://www.youtube.com/' + url.pathname + url.search;
+  // تغییر آدرس مقصد به YouTube
+  const targetUrl = 'https://www.youtube.com' + url.pathname + url.search;
 
-  // ارسال درخواست به سرور مقصد
+  // ارسال درخواست به YouTube
   const response = await fetch(targetUrl, {
     method: request.method,
     headers: request.headers,
@@ -20,5 +20,4 @@ async function handleRequest(request) {
     status: response.status,
     headers: response.headers
   });
-}});
 }
