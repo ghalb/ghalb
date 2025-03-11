@@ -1,24 +1,44 @@
+/**
+ * Cloudflare Worker for Proxying Requests to Target URLs
+
+ */
+
 addEventListener('fetch', event => {
-  event.respondWith(handleRequest(event.request));
+    event.respondWith(handleRequest(event.request));
 });
 
 async function handleRequest(request) {
-  const url = new URL(request.url);
+    const url = new URL(request.url);
 
-  // تغییر آدرس مقصد به دامنه‌ی مورد نظر شما
-  const targetUrl = 'https://www.youtube.com/' + url.pathname + url.search;
+    // Extract the target URL from the path
+    const targetUrl = url.pathname.slice(1); // Remove the leading "/" from the path
 
-  // ارسال درخواست به سرور مقصد
-  const response = await fetch(targetUrl, {
-    method: request.method,
-    headers: request.headers,
-    body: request.body
-  });
+    // Validate the target URL to ensure it's a valid URL
+    try {
+        new URL(targetUrl); // URL validation
+    } catch (e) {
+        return new Response('Invalid URL provided.', { status: 400 });
+    }
 
-  // بازگرداندن پاسخ به کاربر
-  return new Response(response.body, {
-    status: response.status,
-    headers: response.headers
-  });
-}});
+    // Clone the incoming request and prepare it for the target URL
+    const modifiedRequest = new Request(targetUrl + url.search, {
+        method: request.method,
+        headers: request.headers,
+        body: request.body,
+        redirect: 'follow',
+    });
+
+    try {
+        // Fetch the target URL
+        const response = await fetch(modifiedRequest);
+
+        // Return the response from the target server
+        return new Response(response.body, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: response.headers,
+        });
+    } catch (error) {
+        return new Response('Error fetching the target URL.', { status: 500 });
+    }
 }
