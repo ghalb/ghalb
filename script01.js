@@ -6,7 +6,7 @@ async function handleRequest(request) {
   const url = new URL(request.url);
 
   // تغییر آدرس مقصد به دامنه‌ی مورد نظر شما
-  const targetUrl = 'https://ghalb-github-io.pages.dev' + url.pathname + url.search;
+  const targetUrl = 'https://www.youtube.com/' + url.pathname + url.search;
 
   // ارسال درخواست به سرور مقصد
   const response = await fetch(targetUrl, {
